@@ -11,7 +11,7 @@ When I think a build is ready, I will release it [here](https://github.com/CVFir
 
 ## Building
 
-**I don't recommend building unless you know what you are doing.
+**I don't recommend building unless you know what you are doing.**
 
 Download devKitPro if you don't have it (install switch support)
 
