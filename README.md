@@ -6,6 +6,8 @@ Make & Upload more code
 
 Fix exit button on nsp installer
 
+Make icon
+
 ## Download
 When I think a build is ready, I will release it [here](https://github.com/CVFireDragon/Plessi/releases/latest)
 
