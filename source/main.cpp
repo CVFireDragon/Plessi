@@ -1,4 +1,8 @@
 #include <stdio.h>
+#include "main.h"
+#include "autorcm.h"
+
+//Tinfoil Start
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -28,6 +32,8 @@
 extern "C" {
 #endif
 #include "tinfs.h"
+
+//Tinfoil End
 
 void userAppInit(void);
 void userAppExit(void);
@@ -59,6 +65,75 @@ void getFirmwareVersion() {
 
     firmwareMajorVersion = ver.major;
     setsysExit();
+}
+
+long GetAvailableSpace(const char *path)
+{
+	struct statvfs stat;
+
+	if (statvfs(path, &stat) != 0)
+	{
+		return -1;
+	}
+	return stat.f_bsize * stat.f_bavail;
+}
+
+void AutoRcmToggle()
+{
+	//Credits to Rei's Toolkit
+
+	printf("Toggle AutoRcm...\n");
+
+	FsStorage storage;
+
+	int returnable = 0;
+
+	int boot0_part = 0;
+
+	Result r = fsOpenBisStorage(&storage, boot0_part);
+
+	u64 size = 0;
+
+	fsStorageGetSize(&storage, &size);
+
+	if (size == 0)
+	{
+		return -1;
+	}
+
+	char *buf = (char *)malloc(size);
+	r = fsStorageRead(&storage, 0, buf, size);
+	for (int i = 0; i < 4; i++)
+	{
+		int off = BCT_KEY_OFF + i * BCT_SZ;
+		buf[off] ^= RCM_XOR;
+		if (buf[off] != 0xF7)
+			returnable = 1;
+	}
+
+	fsStorageWrite(&storage, 0, buf, size);
+	fsStorageClose(&storage);
+	free(buf);
+	printf("done! press home to exit");
+	return returnable;
+}
+
+void AutoRcmMenu()
+{
+	consoleClear();
+	AutoRcmMenuCalled = 1;
+
+	printf("X to toggle AutoRcm or press home to exit\n");
+
+	while (appletMainLoop())
+	{
+		hidScanInput();
+		u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+
+		if (kDown & KEY_X) AutoRcmToggle();
+		gfxFlushBuffers();
+		gfxSwapBuffers();
+	}
 }
 
 void userAppInit(void)
@@ -141,6 +216,7 @@ int main(int argc, char **argv)
 	printf("Press A to Shutdown\n");
 	printf("Press B to Reboot\n");
 	printf("Press Y to open NSP Installer\n");
+	printf("Press X for AutoRCM\n");
 	
 	while(appletMainLoop())
     {
@@ -257,6 +333,11 @@ int main(int argc, char **argv)
             kDown = hidKeysDown(CONTROLLER_P1_AUTO);
         }
     }
+		}
+		
+		if(kDown & KEY_A)
+		{
+		AutoRcmMenu();
 		}
 		
         if (kDown & KEY_PLUS) break;
