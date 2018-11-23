@@ -67,17 +67,6 @@ void getFirmwareVersion() {
     setsysExit();
 }
 
-long GetAvailableSpace(const char *path)
-{
-	struct statvfs stat;
-
-	if (statvfs(path, &stat) != 0)
-	{
-		return -1;
-	}
-	return stat.f_bsize * stat.f_bavail;
-}
-
 void AutoRcmToggle()
 {
 	//Credits to Rei's Toolkit
@@ -98,7 +87,7 @@ void AutoRcmToggle()
 
 	if (size == 0)
 	{
-		return -1;
+		return;
 	}
 
 	char *buf = (char *)malloc(size);
@@ -115,13 +104,12 @@ void AutoRcmToggle()
 	fsStorageClose(&storage);
 	free(buf);
 	printf("done! press home to exit");
-	return returnable;
+	return;
 }
 
 void AutoRcmMenu()
 {
 	consoleClear();
-	AutoRcmMenuCalled = 1;
 
 	printf("X to toggle AutoRcm or press home to exit\n");
 
@@ -335,7 +323,7 @@ int main(int argc, char **argv)
     }
 		}
 		
-		if(kDown & KEY_A)
+		if(kDown & KEY_X)
 		{
 		AutoRcmMenu();
 		}
