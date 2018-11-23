@@ -40,6 +40,7 @@ ROMFS       := romfs
 APP_TITLE   := Plessi
 APP_AUTHOR  := CVFD
 APP_VERSION := 0.1
+ICON := icon.jpg
 
 #---------------------------------------------------------------------------------
 # options for code generation
