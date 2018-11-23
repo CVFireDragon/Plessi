@@ -30,45 +30,36 @@ include $(DEVKITPRO)/libnx/switch_rules
 #     - icon.jpg
 #     - <libnx folder>/default_icon.jpg
 #---------------------------------------------------------------------------------
-TARGET      := $(notdir $(CURDIR))
-BUILD       := build
-SOURCES     := source source/install source/ipc source/lib source/asset source/data source/ui source/ui/framework source/nx source/nx/ipc source/util source/mode
-DATA        := data
-INCLUDES    := include
-EXEFS_SRC   := exefs_src
-ROMFS       := romfs
-APP_TITLE   := Plessi
-APP_AUTHOR  := CVFD
+APP_TITLE := Plessi
+APP_AUTHOR := CVFD
 APP_VERSION := 0.1
+APP_TITLEID := 01040207060001112
 ICON := icon.jpg
+
+TARGET		:=	$(notdir $(CURDIR))
+BUILD		:=	build
+SOURCES		:=	source
+DATA		:=	data
+INCLUDES	:=	include
+EXEFS_SRC	:=	exefs_src
+#ROMFS	:=	romfs
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-
-# NOTE: I currently compile with
-# export NXLINK_DEBUG=1 && make && nxlink -a ip --server ./Tinfoil.nro
-# If changing from NXLINK_DEBUG=0 to 1, make sure to use make clean first.
-
-ifeq ($(NXLINK_DEBUG),1)
-DEFINES +=	-DNXLINK_DEBUG
-endif
-
 ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
 
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
-			$(ARCH) $(DEFINES) $(CFLAGS)
+			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__ `freetype-config --cflags`
+CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
-CXXFLAGS	:= $(CFLAGS) -std=gnu++17 $(CXXFLAGS)
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= `freetype-config --libs` -lcurl -lz -lnx
-
-
+LIBS	:= -lnx
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -196,7 +187,7 @@ $(OFILES_SRC)	: $(HFILES_BIN)
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
-%.bin.o	:	%.bin
+%.bin.o	%_bin.h :	%.bin
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
