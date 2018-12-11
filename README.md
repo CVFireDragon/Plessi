@@ -1,4 +1,5 @@
 # Plessi
+# This Project is dead
 [WIP] Plessi, the Nintendo Switch MultiTool!
 
 ## Todo
